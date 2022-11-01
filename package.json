@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "allcats": "node allcats.js"
+  },
+  "dependencies": {
+    "canvas": "^2.9.3",
+    "fs-extra": "^10.1.0"
+  }
+}
