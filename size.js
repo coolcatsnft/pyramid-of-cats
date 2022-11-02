@@ -5,7 +5,7 @@ const SIZE = typeof process.env.SIZE === "string" ? (Number(process.env.SIZE) ||
 const numbers = Array.from(Array(SIZE).keys());
 
 exec(
-  'CATIDS=' + numbers.join(',') + ' FILNAME=' + SIZE + ' node ./index.js',
+  'CATIDS=' + numbers.join(',') + ' FILNAME=' + SIZE + ' BACKGROUND_COLOR=pink node ./index.js',
   (error, stdout, stderr) => {
     console.log(stdout);
     console.log(stderr);
