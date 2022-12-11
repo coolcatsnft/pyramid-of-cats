@@ -1,12 +1,13 @@
 const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs-extra');
+const { OutputCanvas, RandomSort } = require('./utils');
 registerFont('./CoolCatsHandwritingRegular.ttf', { family: 'CoolCatsHandwritingRegular' });
 
 const catIds = require('./cats.json').map(cat => cat[0]);
 const imageWidth = process.env.THUMBNAIL_WIDTH || 100;
 const backgroundColor = process.env.BACKGROUND_COLOR || "transparent";
 const CATDIMS = [imageWidth, imageWidth];
-const ids = (process.env.CATIDS || "").split(",").map(id => Number(id.trim())).sort(() => (Math.random() > .5) ? 1 : -1);
+const ids = (process.env.CATIDS || "").split(",").map(id => Number(id.trim())).sort(RandomSort);
 const pyramid = [];
 const calcdFloor = calcFloor(ids);
 const floor = process.env.FLOOR_SPACES || calcdFloor;
@@ -48,7 +49,7 @@ const canvasHeight = canvasWidth;
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
 
-  const fontSize = findFontSize(ctx, 'COOL CATS!', 'CoolCatsHandwritingRegular');
+  const fontSize = findFontSize(ctx, 'COOL CATS!', 'CoolCatsHandwritingRegular', canvasWidth);
   ctx.font = '12px';
   ctx.fillStyle = 'white';
   ctx.fillText('COOL CATS!', catIndent, canvasHeight - catIndent);
@@ -92,7 +93,7 @@ const canvasHeight = canvasWidth;
 
         if (!fs.existsSync(__dirname + '/cache/' + id + '.png')) {
           tmpCtx.drawImage(image, 0, 0, image.width, image.width);
-          await outputCanvas(tmpC, __dirname + '/cache/' + id + '.png');
+          await OutputCanvas(tmpC, __dirname + '/cache/' + id + '.png');
         }
 
         ctx.drawImage(image, x, y, CATDIMS[0], CATDIMS[1]);
@@ -106,7 +107,7 @@ const canvasHeight = canvasWidth;
   ctx.fillStyle = 'white';
   ctx.fillText('Cool Cats!', catIndent / 2, canvas.height - (catIndent / 2));
       
-  await outputCanvas(canvas, __dirname + '/' + filename + '.png');
+  await OutputCanvas(canvas, __dirname + '/' + filename + '.png');
 })();
 
 
@@ -126,22 +127,6 @@ function calcFloor(arr, arr2, level, count) {
   }
 
   return calcFloor(arr, arr2, level + 1, count || 1);
-}
-
-function outputCanvas(c, path) {
-  return new Promise((res, rej) => {
-    const out = fs.createWriteStream(path)
-    const stream = c.createPNGStream();
-    stream.pipe(out);
-    out.on('finish', () => {
-      console.log('The PNG file was created.');
-      res(out)
-    });
-    out.on('error', (err) => {
-      console.log('The PNG file was not created.');
-      rej(err)
-    });
-  })
 }
 
 function findFontSize(ctx, text, fontface) {
