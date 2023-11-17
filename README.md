@@ -1,5 +1,8 @@
 # pyramid-of-cats
 
+To start:
+`npm install`
+
 To run: 
 `node ./poster.js`
 
